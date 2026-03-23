@@ -1,3 +1,5 @@
+<?php require 'search_validation.php'; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,6 +29,7 @@
     <!-- hero / header -->
     <header class="hero">
         <h1>Online Phone Book Database</h1>
+        <h3>Find contacts in our database</h3>
     </header>
 
 
@@ -38,17 +41,47 @@
     </div>
   
     <div class="content-panel">
-        <h2> Search </h2>
-        <div class="form-content">
-            <form>
-                <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" placeholder="First Last">
-                <label for="phone">Phone Number:</label>
-                    <input type="text" id="phone" name="phone" placeholder="XXX-XXX-XXXX">
+    <h2>Search</h2>
+    <div class="form-content">
+        <form>
+
+            <h3></h3>
+            <!-- Name row -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label" for="first_name">First Name</label>
+                            <input class="form-input" type="text" id="first_name" name="first_name" placeholder="First name">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label" for="last_name">Last Name</label>
+                            <input class="form-input" type="text" id="last_name" name="last_name" placeholder="Last name">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phone number row -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="form-label" for="phone">Phone Number</label>
+                            <input class="form-input" type="text" id="phone" name="phone" placeholder="XXX-XXX-XXXX">
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Buttons -->
+            <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Search</button>
-            </form>
-        </div>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+            </div>
+
+        </form>
     </div>
+</div>
 
      <!-- Bottom footer navbar -->
     <footer class="footer"> <!-- ! Note to team, these pages do not exist yet, we'll probably need to make them soon ! -->

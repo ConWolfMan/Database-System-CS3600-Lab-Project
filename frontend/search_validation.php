@@ -1,8 +1,8 @@
 <?php
 // validation code for the search form. We may not use it yet, but figured I'd get it started in case
 
-$nameErr = $phoneErr = $atLeastOneErr = "";
-$name = $phone = "";
+$fnameErr = $lnameErr = $phoneErr = $atLeastOneErr = "";
+$fname = $lname = $phone = "";
 $submitted = false;
 
 function test_input($data) {
@@ -15,10 +15,18 @@ function test_input($data) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Only validate name if something was entered
-    if (!empty($_POST["name"])) {
-        $name = test_input($_POST["name"]);
-        if (!preg_match("/^[a-zA-Z ]*$/", $name)) {
-            $nameErr = "Only letters and white space allowed";
+    if (!empty($_POST["fname"])) {
+        $fname = test_input($_POST["fname"]);
+        if (!preg_match("/^[a-zA-Z ]*$/", $fname)) {
+            $fnameErr = "Only letters and white space allowed";
+        }
+    }
+    
+    // Only validate last name if something was entered
+    if (!empty($_POST["lname"])) {
+        $lname = test_input($_POST["lname"]);
+        if (!preg_match("/^[a-zA-Z ]*$/", $lname)) {
+            $lnameErr = "Only letters and white space allowed";
         }
     }
 
@@ -31,12 +39,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Check at least one field was filled
-    if (empty($name) && empty($phone)) {
+    if (empty($fname) && empty($lname) && empty($phone)) {
         $atLeastOneErr = "Please enter a name or phone number to search.";
     }
 
     // Only flag as ready to search if no errors anywhere
-    if (empty($nameErr) && empty($phoneErr) && empty($atLeastOneErr)) {
+    if (empty($fnameErr) && empty($lnameErr) && empty($phoneErr) && empty($atLeastOneErr)) {
         $submitted = true;
     }
 }
