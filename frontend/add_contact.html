@@ -26,15 +26,15 @@
 
     <!-- hero / header -->
     <header class="hero">
-        <h1>Contact Take Down Request</h1>
+        <h1>Add New Contact</h1>
         <h3>Fill out entire form carefully</h3>
     </header>
   
     <div class="content-panel">
-    <h2>Deletion Request</h2>
     <div class="form-content">
         <form>
 
+            <h3>Personal Information</h3>
             <!-- Name row -->
             <div class="row">
                 <div class="col-md-6">
@@ -51,6 +51,41 @@
                 </div>
             </div>
 
+            <!-- Street address row -->
+            <div class="row">
+                <div class ="col-12">
+                    <div class="form-group">
+                        <label class="form-label" for="str_address">Street Address</label>
+                            <input class="form-input" type="text" id="str_address" name="str_address" placeholder="1234 example st" optional>
+                    </div>
+                </div>
+            </div>
+
+            <!-- City, state, zip row -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group ">
+                        <label class="form-label" for="city">City</label>
+                            <input class="form-input" type="text" id="city" name="city" placeholder="City" optional>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label" for="state">State</label>
+                            <input class="form-input" type="text" id="state" name="state" placeholder="State" optional>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label" for="zip">Zip Code</label>
+                            <input class="form-input" type="text" id="zip" name="zip" placeholder="Zip Code" optional>
+                    </div>
+                </div>
+            </div>
+
+
+            <h3>Contact Information</h3>
+
             <!-- Phone number row -->
             <div class="row">
                 <div class="col-12">
@@ -61,13 +96,28 @@
                 </div>
             </div>
 
-            <!-- Reason field -->
+            <!-- Email row -->
             <div class="row">
                 <div class="col-12">
                     <div class="form-group">
-                        <label class="form-label" for="reason">Reason for Deletion</label>
-                            <textarea class="form-input" id="reason" name="reason" 
-                                placeholder="Please provide a reason for the deletion request" rows="4" required></textarea>
+                        <label class="form-label" for="email">Email Address</label>
+                            <input class="form-input" type="email" id="email" name="email" placeholder="example@email.com">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Type row -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="form-label" for="type">Contact Type</label> 
+                            <select class="form-input" id="type" name="type">
+                                <option value="">Select type</option>
+                                <option value="personal">Personal</option>
+                                <option value="business">Business</option>
+                                <option value="government">Government</option>
+                                <option value="non_profit">Non-Profit</option>
+                            </select>
                     </div>
                 </div>
             </div>

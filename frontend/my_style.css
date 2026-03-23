@@ -272,11 +272,20 @@ section.content-section {
         margin-bottom: 0.5rem;
     }
 
-    .form-content input[type="text"]{
+    .form-content input[type="text"],
+    .form-content input[type="email"]{
         padding: 0.5rem;
         border: 1px solid var(--border-color);
         border-radius: 4px;
         width: 100%;
+    }
+
+    .form-content select {
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        width: 100%;
+        background: white;
     }
 
     .form-content textarea {
@@ -286,6 +295,8 @@ section.content-section {
         width: 100%;
         resize: vertical;
     }
+
+
 
     button {
         padding: 5px 10px; /* size of buttons */
