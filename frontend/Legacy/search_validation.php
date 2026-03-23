@@ -1,5 +1,7 @@
 <?php
 // validation code for the search form. We may not use it yet, but figured I'd get it started in case
+// so turns out Github pages doesn't support PHP and we have to switch to something else.
+
 
 $fnameErr = $lnameErr = $phoneErr = $atLeastOneErr = "";
 $fname = $lname = $phone = "";
