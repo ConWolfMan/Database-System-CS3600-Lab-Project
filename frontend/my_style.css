@@ -12,7 +12,7 @@
 
 
 :root {
-    --background-color:        #F2D835;  /* main page background */
+    --background-color:        #eedf7c;  /* main page background */
     --background-color-dark:   #D4BC1A;  
     --background-color-light:  #FBF3C0;  
     --headerandfooter-color:  #C8A800;  /* header and footer background */
@@ -41,6 +41,7 @@ body {
 
 main {
     flex: 1; /*Pushes footer to the bottom of short pages*/
+    background: transparent; /*disables boostrap's background stuff. So we can use the css styling*/
 }
 
 
@@ -61,7 +62,7 @@ nav.navbar {
 }
 
 .navbar-brand {
-    color: var(--text-heading);
+    color: var(--text-color-heading);
     font-family: 'Cinzel', serif;
     font-size: 1.15rem;
     font-weight: 700;
@@ -81,7 +82,7 @@ nav.navbar {
 }
 
 .nav-link {
-    color: var(--text-muted);
+    color: var(--text-color-muted);
     font-size: 0.85rem;
     font-family: 'Cinzel', serif;
     letter-spacing: 0.08em;
@@ -114,7 +115,7 @@ nav.navbar {
     display: block;
     width: 22px;
     height: 2px;
-    background: var(--text-muted);
+    background: var(--text-color-muted);
     border-radius: 2px;
     transition: transform 0.3s, opacity 0.3s;
 }
@@ -126,18 +127,19 @@ footer {
     border-top: 2px solid var(--border-color);
     padding: 1rem 2rem;
     position: relative;
+    text-align: center;
     z-index: 1;
 }
 
 .footer-content {
-    color: var(--text-muted);
+    color: var(--text-color-muted);
     font-size: 0.85rem;
     text-align: center;
     line-height: 2;
 }
 
 .footer-content a {
-    color: var(--text-muted);
+    color: var(--text-color-muted);
     text-decoration: none;
     margin: 0 0.5rem;
     transition: color 0.2s;
@@ -151,7 +153,7 @@ footer {
 /* Hero section styling ------------------------------------------------- */
 header.hero {
     background: var(--surface-color);
-    border-bottom: 4px solid var(--border-color);
+    border-bottom: 4px double var(--border-color);
     text-align: center;
     align-items: center;
     padding: 3rem 2rem 2.5rem;
@@ -222,7 +224,7 @@ section.content-section {
     background-color: var(--surface-color);
     border: 1px solid var(--border-color);
     box-shadow: 4px 4px 0 var(--border-color);
-    border-radius: 8px; /*roundness of the corners*/
+    border-radius: 0px; /*roundness of the corners*/
     padding: 2rem 2.5rem;
     margin: 1rem auto;
     max-width: 600px;
@@ -250,13 +252,13 @@ section.content-section {
 /* ---------------------------------------------------------------------- */
 
 /* Form styling ------------------------------------------------------ */
-.form-section { /* formatting for the form */
+.form-content { /* formatting for the form */
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
 }
-    .form-section form {
+    .form-content form {
         display: flex;
         flex-direction: column;
         gap: 1rem;
@@ -264,7 +266,7 @@ section.content-section {
         max-width: 400px;
     }
 
-    .form-section label {
+    .form-content label {
         font-weight: bold;
         margin-bottom: 0.5rem;
     }
