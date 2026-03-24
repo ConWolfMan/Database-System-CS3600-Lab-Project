@@ -31,10 +31,27 @@
     </header>
   
     <div class="content-panel">
-        <p>
-            Stuff and things
-        </p>
+        <p id="contacts-status">Loading...</p>
+        <table class="table" id="contacts-table" style="display:none;">
+            <thead><tr><th>Name</th><th>Phone</th><th>City</th><th>State</th><th>Address</th></tr></thead>
+            <tbody id="contacts-body"></tbody>
+        </table>
     </div>
+
+    <script>
+        fetch('http://127.0.0.1:5000/api/contacts')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('contacts-status').style.display = 'none';
+                const tbody = document.getElementById('contacts-body');
+                data.forEach(c => {
+                    tbody.insertAdjacentHTML('beforeend',
+                        `<tr><td>${c.Name??''}</td><td>${c.PhoneNumber??''}</td><td>${c.City??''}</td><td>${c.State??''}</td><td>${c.Address??''}</td></tr>`);
+                });
+                document.getElementById('contacts-table').style.display = '';
+            })
+            .catch(() => { document.getElementById('contacts-status').textContent = 'Error: could not reach server.'; });
+    </script>
 
 
      <!-- Bottom footer navbar -->
