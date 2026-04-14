@@ -4,6 +4,9 @@ This is a repository for a group assignment for a University Course
 ## Project Goal
 Create a online phone book that stores information such as (person, phone number, business). Users can search for businesses, numbers, or people and get data back
 
+## Access
+**Home Page** http://localhost/Database-System-CS3600-Lab-Project/
+**API DOCS** `http://127.0.0.1:5000/apidocs`.
 
 ## Getting Started
 
@@ -43,4 +46,3 @@ irm http://127.0.0.1:5000/api/db-check  # should return: db connected
 irm http://127.0.0.1:5000/api/contacts  # should return: []
 ```
 
-Swagger UI (interactive API docs) is available at `http://127.0.0.1:5000/apidocs`.
