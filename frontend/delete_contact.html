@@ -1,99 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>Online Phone Book</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Contact — Phone Book</title>
 
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
+          crossorigin="anonymous">
 
-    <!--Note, load bootsrap first or it'll override some of the styling from the css file-->
-    <!-- Enabling bootstrap for forms stuff -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-    <!-- This links to the my_style.css file so that we can apply its styling -->
+    <!-- Custom styles -->
     <link rel="stylesheet" href="my_style.css">
-
-
 </head>
 <body>
-    <!-- Top header navbar -->
+
+    <!-- Top navbar -->
     <nav class="navbar">
-        <a href="../index.html" class="nav-link">Home</a> <!-- ! note to team : These are just temp examples, change in the future !  -->
+        <a href="../index.html" class="nav-link">Home</a>
         <a href="browse_contacts.html" class="nav-link">Browse Contacts</a>
         <a href="add_contact.html" class="nav-link">Add Contact</a>
         <a href="delete_contact.html" class="nav-link">Delete Contact</a>
     </nav>
 
-    <!-- hero / header -->
+    <!-- Hero header -->
     <header class="hero">
-        <h1>Contact Take Down Request</h1>
-        <h3>Fill out entire form carefully</h3>
+        <h1>Delete Contact</h1>
+        <h3>Enter contact details to delete</h3>
     </header>
-  
+
     <div class="content-panel">
-    <h2>Deletion Request</h2>
-    <div class="form-content">
-        <form>
+        <p id="form-status" class="status-msg" style="display:none;"></p>
 
-            <!-- Name row -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="form-label" for="first_name">First Name</label>
-                            <input class="form-input" type="text" id="first_name" name="first_name" placeholder="First name" required>
-                    </div>
+        <div class="form-content">
+            <form id="delete-form">
+
+                <h3>Contact Information</h3>
+
+                <!-- Name row -->
+               <div class="form-group">
+                    <label for="name">Full Name <span class="required">*</span></label>
+                    <input class="form-input" type="text" id="name" name="Name" placeholder="e.g. Jane Smith" required>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="form-label" for="last_name">Last Name</label>
-                            <input class="form-input" type="text" id="last_name" name="last_name" placeholder="Last name" required>
-                    </div>
+
+                <!-- Phone number -->
+                <div class="form-group">
+                    <label for="phone">Phone Number <span class="required">*</span></label>
+                    <input class="form-input" type="text" id="phone" placeholder="XXX-XXX-XXXX" required>
                 </div>
-            </div>
 
-            <!-- Phone number row -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="form-group">
-                        <label class="form-label" for="phone">Phone Number</label>
-                            <input class="form-input" type="text" id="phone" name="phone" placeholder="XXX-XXX-XXXX" required>
-                    </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submit-btn">Delete Contact</button>
+                    <button type="reset" class="btn btn-secondary">Clear Form</button>
                 </div>
-            </div>
 
-            <!-- Reason field -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="form-group">
-                        <label class="form-label" for="reason">Reason for Deletion</label>
-                            <textarea class="form-input" id="reason" name="reason" 
-                                placeholder="Please provide a reason for the deletion request" rows="4" required></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Buttons -->
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="reset" class="btn btn-secondary">Reset</button>
-            </div>
-
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 
-     <!-- Bottom footer navbar -->
-    <footer class="footer"> <!-- ! Note to team, these pages do not exist yet, we'll probably need to make them soon ! -->
+    <!-- Footer -->
+    <footer class="footer">
         <p>
             &copy; 2026 "Online Phone Book Database". All rights reserved.
                 &nbsp;|&nbsp;
                 <a href="cookie_policy.html">Cookie Policy</a>
                 &nbsp;|&nbsp;
-                    <a href="privacy_policy.html">Privacy Policy</a>
+                <a href="privacy_policy.html">Privacy Policy</a>
                 &nbsp;|&nbsp;
-                    <a href="terms_and_cond.html">Terms and Conditions</a>
+                <a href="terms_and_cond.html">Terms and Conditions</a>
         </p>
     </footer>
-</body>
 
+    <script>
+        const form      = document.getElementById('delete-form');
+        const statusEl  = document.getElementById('form-status');
+        const submitBtn = document.getElementById('submit-btn');
+
+        function showStatus(msg, type) {
+            statusEl.textContent = msg;
+            statusEl.className = `status-msg ${type || ''}`;
+            statusEl.style.display = 'block';
+            statusEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name  = document.getElementById('name').value.trim();
+            const phone     = document.getElementById('phone').value.trim();
+
+            // Validation
+            if (!name)  { showStatus('Please enter a full name.', 'error'); return; }
+            if (!phone) { showStatus('Phone number is required.', 'error'); return; }
+
+            // Payload - adjust field names if your Flask backend expects different keys
+            const payload = {
+                Name:        name,
+                PhoneNumber: phone
+            };
+
+            // Loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Deleting…';
+
+            try {
+                const res = await fetch('http://127.0.0.1:5000/api/contacts/delete', {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify(payload),
+                });
+
+                if (res.ok) {
+                    showStatus('✓ Contact deleted successfully!', 'success');
+                    form.reset();
+                } else {
+                    const errData = await res.json().catch(() => ({}));
+                    showStatus('Error: ' + (errData.message || res.statusText), 'error');
+                }
+            } catch (err) {
+                showStatus('Could not reach the server. Make sure it is running.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Delete Contact';
+            }
+        });
+    </script>
+</body>
 </html>

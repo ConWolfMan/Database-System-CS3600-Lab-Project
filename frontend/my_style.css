@@ -30,6 +30,9 @@ html {
 }
 
 /*Body styling*/
+html {
+    height: 100%;
+}
 body {
     background-color: var(--background-color);
     color: var(--text-color);
@@ -37,6 +40,8 @@ body {
     font-size: 1rem;
     display: flex;
     flex-direction: column;
+    /* grid-template-rows: auto 1fr auto; */
+    min-height: 100vh;
 }
 
 main {
@@ -126,9 +131,14 @@ footer {
     background-color: var(--headerandfooter-color);
     border-top: 2px solid var(--border-color);
     padding: 1rem 2rem;
-    position: relative;
+    /* position: relative; */
+    /* position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0; */
     text-align: center;
     z-index: 1;
+    margin-top: auto;
 }
 
 .footer-content {

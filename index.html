@@ -30,55 +30,50 @@
         <h3>Find contacts in our database</h3>
     </header>
 
-
-    <!-- main content -->
+          <!-- Quick search -->
     <div class="content-panel">
-        <p>
-            Stuff and things
-        </p>
+        <h2>Quick Search</h2>
+        <div class="form-content">
+            <form id="search-form">
+                <div class="form-group">
+                    <label for="s_name">Name</label>
+                    <input type="text" id="s_name" placeholder="e.g. Jane Smith">
+                </div>
+                <div class="form-group">
+                    <label for="s_phone">Phone Number</label>
+                    <input type="text" id="s_phone" placeholder="XXX-XXX-XXXX">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="reset" class="btn btn-secondary">Clear</button>
+                </div>
+            </form>
+        </div>
+ 
+        <!-- Results -->
+        <div id="search-results" style="margin-top:1.5rem; display:none;">
+            <p id="results-status" class="status-msg"></p>
+            <div class="contacts-table-wrap">
+                <table class="table" id="results-table" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Address</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  
+ 
     <div class="content-panel">
-    <h2>Search</h2>
-    <div class="form-content">
-        <form>
-
-            <!-- Name row -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="form-label" for="first_name">First Name</label>
-                            <input class="form-input" type="text" id="first_name" name="first_name" placeholder="First name">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="form-label" for="last_name">Last Name</label>
-                            <input class="form-input" type="text" id="last_name" name="last_name" placeholder="Last name">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Phone number row -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="form-group">
-                        <label class="form-label" for="phone">Phone Number</label>
-                            <input class="form-input" type="text" id="phone" name="phone" placeholder="XXX-XXX-XXXX">
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- Buttons -->
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Search</button>
-                <button type="reset" class="btn btn-secondary">Reset</button>
-            </div>
-
-        </form>
+        <h3>About This Directory</h3>
+        <p>Use this database to look up contacts, add new entries, or remove outdated records. Navigate using the links above.</p>
     </div>
-</div>
 
      <!-- Bottom footer navbar -->
     <footer class="footer"> <!-- ! Note to team, these pages do not exist yet, we'll probably need to make them soon ! -->
@@ -92,6 +87,65 @@
                     <a href="frontend/terms_and_cond.html">Terms and Conditions</a>
         </p>
     </footer>
+
+<script>
+ 
+        function escHtml(str) {
+            return String(str ?? '')
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+ 
+        document.getElementById('search-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+ 
+            const name  = document.getElementById('s_name').value.trim();
+            const phone = document.getElementById('s_phone').value.trim();
+ 
+            const resultsDiv = document.getElementById('search-results');
+            const statusEl   = document.getElementById('results-status');
+            const tableEl    = document.getElementById('results-table');
+            const tbody      = document.getElementById('results-body');
+ 
+            resultsDiv.style.display = '';
+            statusEl.textContent = 'Searching…';
+            statusEl.className = 'status-msg';
+            tableEl.style.display = 'none';
+            tbody.innerHTML = '';
+ 
+            const params = new URLSearchParams();
+            if (name)  params.append('name', name);
+            if (phone) params.append('phone', phone);
+ 
+            try {
+                const res  = await fetch(`http://127.0.0.1:5000/api/contacts?${params}`);
+                if (!res.ok) throw new Error(`Server responded ${res.status}`);
+                const data = await res.json();
+ 
+                if (!data.length) {
+                    statusEl.textContent = 'No contacts found matching your search.';
+                    return;
+                }
+ 
+                statusEl.textContent = '';
+                data.forEach(c => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${escHtml(c.Name        ?? '')}</td>
+                        <td>${escHtml(c.PhoneNumber ?? '')}</td>
+                        <td>${escHtml(c.City        ?? '')}</td>
+                        <td>${escHtml(c.State       ?? '')}</td>
+                        <td>${escHtml(c.Address     ?? '')}</td>`;
+                    tbody.appendChild(tr);
+                });
+                tableEl.style.display = '';
+            } catch (err) {
+                statusEl.textContent = 'Could not reach the server. Make sure it is running.';
+                statusEl.className = 'status-msg error';
+            }
+        });
+    </script>
+
 </body>
 
 </html>
