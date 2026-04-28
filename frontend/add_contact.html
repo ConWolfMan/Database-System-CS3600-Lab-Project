@@ -19,6 +19,7 @@
         <a href="../index.html" class="nav-link">Home</a> <!-- ! note to team : These are just temp examples, change in the future !  -->
         <a href="browse_contacts.html" class="nav-link">Browse Contacts</a>
         <a href="add_contact.html" class="nav-link">Add Contact</a>
+        <a href="edit_contact.html" class="nav-link">Edit Contact</a>
         <a href="delete_contact.html" class="nav-link">Delete Contact</a>
     </nav>
 
@@ -32,41 +33,37 @@
         <p id="form-status" class="status-msg" style="display:none;"></p>
 
         <div class="form-content">
-            <form id="add-form">
+            <form id="add-form" action="#">
 
-                <h3>Personal Information</h3>
-
-                
                 <div class="form-group">
                     <label for="name">Full Name <span class="required">*</span></label>
-                    <input class="form-input" type="text" id="name" name="Name" placeholder="e.g. Jane Smith" required>
+                    <input class="form-input" type="text" id="name" placeholder="e.g. Jane Smith">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number <span class="required">*</span></label>
+                    <input type="text" id="phone" placeholder="XXX-XXX-XXXX">
                 </div>
 
                 <div class="form-group">
                     <label for="str_address">Street Address</label>
-                    <input type="text" id="str_address" name="Address" placeholder="1234 Example St">
+                    <input type="text" id="str_address" placeholder="1234 Example St">
                 </div>
 
                 <div class="form-row" style="grid-template-columns: 2fr 1fr;">
                     <div class="form-group">
                         <label for="city">City</label>
-                        <input type="text" id="city" name="City" placeholder="Springfield">
+                        <input type="text" id="city" placeholder="Springfield">
                     </div>
                     <div class="form-group">
                         <label for="state">State</label>
-                        <input type="text" id="state" name="State" placeholder="WA">
+                        <input type="text" id="state" placeholder="WA">
                     </div>
                 </div>
 
-                <h3>Contact Information</h3>
-
-                <div class="form-group">
-                    <label for="phone">Phone Number <span class="required">*</span></label>
-                    <input type="text" id="phone" name="PhoneNumber" placeholder="XXX-XXX-XXXX" required>
-                </div>
-
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary" id="submit-btn">Add Contact</button>
+                    <!-- type="button" means the browser will NEVER submit this form natively -->
+                    <button type="button" class="btn btn-primary" id="submit-btn">Add Contact</button>
                     <button type="reset" class="btn btn-secondary">Clear Form</button>
                 </div>
 
@@ -88,9 +85,6 @@
     </footer>
 
     <script>
-    
-
-        const form      = document.getElementById('add-form');
         const statusEl  = document.getElementById('form-status');
         const submitBtn = document.getElementById('submit-btn');
 
@@ -101,16 +95,15 @@
             statusEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-       form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
+        // type="button" means the browser never submits the form natively.
+        // All submission logic lives here.
+        submitBtn.addEventListener('click', async function() {
             const name  = document.getElementById('name').value.trim();
             const phone = document.getElementById('phone').value.trim();
 
             if (!name)  { showStatus('Please enter a full name.', 'error'); return; }
             if (!phone) { showStatus('Phone number is required.', 'error'); return; }
 
-            // Payload keys match DB column names exactly
             const payload = {
                 Name:        name,
                 PhoneNumber: phone,
@@ -130,15 +123,16 @@
                 });
 
                 if (res.ok) {
-                    showStatus('✓ Contact added successfully!', 'success');
-                    form.reset();
+                    showStatus('✓ Contact added! Redirecting to contacts list…', 'success');
+                    setTimeout(() => { window.location.href = 'browse_contacts.html'; }, 1500);
                 } else {
                     const errData = await res.json().catch(() => ({}));
-                    showStatus('Server error: ' + (errData.message || res.statusText), 'error');
+                    showStatus('Error: ' + (errData.error || res.statusText), 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Add Contact';
                 }
             } catch (err) {
                 showStatus('Could not reach the server. Make sure it is running.', 'error');
-            } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Add Contact';
             }

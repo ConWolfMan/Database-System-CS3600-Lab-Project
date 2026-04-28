@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Contact — Phone Book</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="my_style.css">
+</head>
+<body>
+
+    <!-- Top navbar -->
+    <nav class="navbar">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="browse_contacts.html" class="nav-link">Browse Contacts</a>
+        <a href="add_contact.html" class="nav-link">Add Contact</a>
+        <a href="edit_contact.html" class="nav-link">Edit Contact</a>
+        <a href="delete_contact.html" class="nav-link">Delete Contact</a>
+    </nav>
+
+    <!-- Hero header -->
+    <header class="hero">
+        <h1>Edit Contact</h1>
+        <h3>Look up a contact by phone number, then update their details</h3>
+    </header>
+
+    <div class="content-panel">
+        <p id="status-msg" class="status-msg" style="display:none;"></p>
+
+        <!-- Step 1: Look up the contact -->
+        <div class="form-content" id="lookup-section">
+            <form id="lookup-form">
+                <h3>Step 1 — Find Contact</h3>
+                <div class="form-group">
+                    <label for="lookup-phone">Phone Number <span class="required">*</span></label>
+                    <input class="form-input" type="text" id="lookup-phone" placeholder="XXX-XXX-XXXX" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="lookup-btn">Look Up</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Step 2: Edit form (hidden until contact is found) -->
+        <div class="form-content" id="edit-section" style="display:none;">
+            <form id="edit-form">
+                <h3>Step 2 — Update Details</h3>
+                <p style="font-size:0.85rem; color: var(--text-color-muted);">Phone number cannot be changed. Leave a field blank to keep its current value.</p>
+
+                <div class="form-group">
+                    <label for="edit-name">Full Name</label>
+                    <input class="form-input" type="text" id="edit-name" placeholder="Jane Smith">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-address">Street Address</label>
+                    <input type="text" id="edit-address" placeholder="1234 Example St">
+                </div>
+
+                <div class="form-row" style="grid-template-columns: 2fr 1fr;">
+                    <div class="form-group">
+                        <label for="edit-city">City</label>
+                        <input type="text" id="edit-city" placeholder="Springfield">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-state">State</label>
+                        <input type="text" id="edit-state" placeholder="WA">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="save-btn">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>
+            &copy; 2026 "Online Phone Book Database". All rights reserved.
+                &nbsp;|&nbsp;
+                <a href="cookie_policy.html">Cookie Policy</a>
+                &nbsp;|&nbsp;
+                <a href="privacy_policy.html">Privacy Policy</a>
+                &nbsp;|&nbsp;
+                <a href="terms_and_cond.html">Terms and Conditions</a>
+        </p>
+    </footer>
+
+    <script>
+        const statusEl     = document.getElementById('status-msg');
+        const lookupForm   = document.getElementById('lookup-form');
+        const lookupBtn    = document.getElementById('lookup-btn');
+        const lookupPhone  = document.getElementById('lookup-phone');
+        const lookupSection = document.getElementById('lookup-section');
+        const editSection  = document.getElementById('edit-section');
+        const editForm     = document.getElementById('edit-form');
+        const saveBtn      = document.getElementById('save-btn');
+        const cancelBtn    = document.getElementById('cancel-btn');
+
+        let currentPhone = '';
+
+        function showStatus(msg, type) {
+            statusEl.textContent = msg;
+            statusEl.className = 'status-msg ' + (type || '');
+            statusEl.style.display = '';
+            statusEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function hideStatus() {
+            statusEl.style.display = 'none';
+        }
+
+        // Step 1: look up contact
+        lookupForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const phone = lookupPhone.value.trim();
+            if (!phone) { showStatus('Please enter a phone number.', 'error'); return; }
+
+            lookupBtn.disabled = true;
+            lookupBtn.textContent = 'Looking up…';
+            hideStatus();
+
+            try {
+                const res = await fetch(`http://127.0.0.1:5000/api/contacts/${encodeURIComponent(phone)}`);
+
+                if (res.status === 404) {
+                    showStatus('No contact found with that phone number.', 'error');
+                    return;
+                }
+                if (!res.ok) {
+                    showStatus('Server error: ' + res.statusText, 'error');
+                    return;
+                }
+
+                const contact = await res.json();
+                currentPhone = phone;
+
+                // Pre-fill the edit form with current values
+                document.getElementById('edit-name').value    = contact.Name    || '';
+                document.getElementById('edit-address').value = contact.Address || '';
+                document.getElementById('edit-city').value    = contact.City    || '';
+                document.getElementById('edit-state').value   = contact.State   || '';
+
+                editSection.style.display = '';
+                showStatus(`Editing contact: ${contact.Name} (${phone})`, 'success');
+            } catch (err) {
+                showStatus('Could not reach the server. Make sure it is running.', 'error');
+            } finally {
+                lookupBtn.disabled = false;
+                lookupBtn.textContent = 'Look Up';
+            }
+        });
+
+        // Step 2: save changes
+        editForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const payload = {};
+            const name    = document.getElementById('edit-name').value.trim();
+            const address = document.getElementById('edit-address').value.trim();
+            const city    = document.getElementById('edit-city').value.trim();
+            const state   = document.getElementById('edit-state').value.trim();
+
+            if (name)    payload.Name    = name;
+            if (address) payload.Address = address;
+            if (city)    payload.City    = city;
+            if (state)   payload.State   = state;
+
+            if (Object.keys(payload).length === 0) {
+                showStatus('Please fill in at least one field to update.', 'error');
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving…';
+
+            try {
+                const res = await fetch(`http://127.0.0.1:5000/api/contacts/${encodeURIComponent(currentPhone)}`, {
+                    method:  'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify(payload),
+                });
+
+                if (res.ok) {
+                    showStatus('✓ Contact updated successfully!', 'success');
+                    editSection.style.display = 'none';
+                    lookupForm.reset();
+                    currentPhone = '';
+                } else {
+                    const errData = await res.json().catch(() => ({}));
+                    showStatus('Error: ' + (errData.error || res.statusText), 'error');
+                }
+            } catch (err) {
+                showStatus('Could not reach the server. Make sure it is running.', 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Changes';
+            }
+        });
+
+        // Cancel button resets to lookup step
+        cancelBtn.addEventListener('click', function() {
+            editSection.style.display = 'none';
+            lookupForm.reset();
+            currentPhone = '';
+            hideStatus();
+        });
+    </script>
+</body>
+</html>

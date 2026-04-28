@@ -20,13 +20,14 @@
         <a href="../index.html" class="nav-link">Home</a>
         <a href="browse_contacts.html" class="nav-link">Browse Contacts</a>
         <a href="add_contact.html" class="nav-link">Add Contact</a>
+        <a href="edit_contact.html" class="nav-link">Edit Contact</a>
         <a href="delete_contact.html" class="nav-link">Delete Contact</a>
     </nav>
 
     <!-- Hero header -->
     <header class="hero">
         <h1>Delete Contact</h1>
-        <h3>Enter contact details to delete</h3>
+        <h3>Enter the phone number of the contact to delete</h3>
     </header>
 
     <div class="content-panel">
@@ -36,12 +37,6 @@
             <form id="delete-form">
 
                 <h3>Contact Information</h3>
-
-                <!-- Name row -->
-               <div class="form-group">
-                    <label for="name">Full Name <span class="required">*</span></label>
-                    <input class="form-input" type="text" id="name" name="Name" placeholder="e.g. Jane Smith" required>
-                </div>
 
                 <!-- Phone number -->
                 <div class="form-group">
@@ -86,28 +81,16 @@
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const name  = document.getElementById('name').value.trim();
-            const phone     = document.getElementById('phone').value.trim();
+            const phone = document.getElementById('phone').value.trim();
 
-            // Validation
-            if (!name)  { showStatus('Please enter a full name.', 'error'); return; }
             if (!phone) { showStatus('Phone number is required.', 'error'); return; }
 
-            // Payload - adjust field names if your Flask backend expects different keys
-            const payload = {
-                Name:        name,
-                PhoneNumber: phone
-            };
-
-            // Loading state
             submitBtn.disabled = true;
             submitBtn.textContent = 'Deleting…';
 
             try {
-                const res = await fetch('http://127.0.0.1:5000/api/contacts/delete', {
-                    method:  'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body:    JSON.stringify(payload),
+                const res = await fetch(`http://127.0.0.1:5000/api/contacts/${encodeURIComponent(phone)}`, {
+                    method: 'DELETE',
                 });
 
                 if (res.ok) {
@@ -115,7 +98,7 @@
                     form.reset();
                 } else {
                     const errData = await res.json().catch(() => ({}));
-                    showStatus('Error: ' + (errData.message || res.statusText), 'error');
+                    showStatus('Error: ' + (errData.error || res.statusText), 'error');
                 }
             } catch (err) {
                 showStatus('Could not reach the server. Make sure it is running.', 'error');

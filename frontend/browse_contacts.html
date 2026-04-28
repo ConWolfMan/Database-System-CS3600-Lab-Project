@@ -21,6 +21,7 @@
         <a href="../index.html" class="nav-link">Home</a> <!-- ! note to team : These are just temp examples, change in the future !  -->
         <a href="browse_contacts.html" class="nav-link">Browse Contacts</a>
         <a href="add_contact.html" class="nav-link">Add Contact</a>
+        <a href="edit_contact.html" class="nav-link">Edit Contact</a>
         <a href="delete_contact.html" class="nav-link">Delete Contact</a>
     </nav>
 
@@ -31,7 +32,29 @@
         <h3>View all contacts</h3>
     </header>
   
-    <div class="content-panel">
+    <div class="content-panel" style="max-width:900px;">
+        <!-- Search / filter controls -->
+        <form id="search-form" style="display:flex; flex-wrap:wrap; gap:0.75rem; margin-bottom:1.25rem; align-items:flex-end;">
+            <div class="form-group" style="flex:1; min-width:140px; margin-bottom:0;">
+                <label for="f-name" style="font-size:0.85rem;">Name</label>
+                <input type="text" id="f-name" placeholder="Any name" style="width:100%; padding:0.4rem; border:1px solid var(--border-color); border-radius:4px;">
+            </div>
+            <div class="form-group" style="flex:1; min-width:140px; margin-bottom:0;">
+                <label for="f-phone" style="font-size:0.85rem;">Phone</label>
+                <input type="text" id="f-phone" placeholder="Any number" style="width:100%; padding:0.4rem; border:1px solid var(--border-color); border-radius:4px;">
+            </div>
+            <div class="form-group" style="flex:1; min-width:120px; margin-bottom:0;">
+                <label for="f-city" style="font-size:0.85rem;">City</label>
+                <input type="text" id="f-city" placeholder="Any city" style="width:100%; padding:0.4rem; border:1px solid var(--border-color); border-radius:4px;">
+            </div>
+            <div class="form-group" style="flex:0 0 80px; margin-bottom:0;">
+                <label for="f-state" style="font-size:0.85rem;">State</label>
+                <input type="text" id="f-state" placeholder="WA" maxlength="2" style="width:100%; padding:0.4rem; border:1px solid var(--border-color); border-radius:4px;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="height:34px; align-self:flex-end;">Search</button>
+            <button type="reset"  class="btn btn-secondary" id="clear-btn" style="height:34px; align-self:flex-end;">Clear</button>
+        </form>
+
         <p id="contacts-status">Loading...</p>
         <table class="table" id="contacts-table" style="display:none;">
             <thead><tr><th>Name</th><th>Phone</th><th>City</th><th>State</th><th>Address</th></tr></thead>
@@ -40,18 +63,70 @@
     </div>
 
     <script>
-        fetch('http://127.0.0.1:5000/api/contacts')
-            .then(r => r.json())
-            .then(data => {
-                document.getElementById('contacts-status').style.display = 'none';
-                const tbody = document.getElementById('contacts-body');
-                data.forEach(c => {
-                    tbody.insertAdjacentHTML('beforeend',
-                        `<tr><td>${c.Name??''}</td><td>${c.PhoneNumber??''}</td><td>${c.City??''}</td><td>${c.State??''}</td><td>${c.Address??''}</td></tr>`);
+        const statusEl  = document.getElementById('contacts-status');
+        const tbody     = document.getElementById('contacts-body');
+        const table     = document.getElementById('contacts-table');
+        const searchForm = document.getElementById('search-form');
+        const clearBtn  = document.getElementById('clear-btn');
+
+        function buildUrl() {
+            const params = new URLSearchParams();
+            const name  = document.getElementById('f-name').value.trim();
+            const phone = document.getElementById('f-phone').value.trim();
+            const city  = document.getElementById('f-city').value.trim();
+            const state = document.getElementById('f-state').value.trim();
+            if (name)  params.set('name',  name);
+            if (phone) params.set('phone', phone);
+            if (city)  params.set('city',  city);
+            if (state) params.set('state', state);
+            const qs = params.toString();
+            return 'http://127.0.0.1:5000/api/contacts' + (qs ? '?' + qs : '');
+        }
+
+        function loadContacts() {
+            statusEl.style.display = '';
+            statusEl.textContent = 'Loading...';
+            table.style.display = 'none';
+            tbody.innerHTML = '';
+
+            fetch(buildUrl())
+                .then(r => r.json())
+                .then(data => {
+                    statusEl.style.display = 'none';
+                    if (data.length === 0) {
+                        statusEl.textContent = 'No contacts found.';
+                        statusEl.style.display = '';
+                        return;
+                    }
+                    data.forEach(c => {
+                        tbody.insertAdjacentHTML('beforeend',
+                            `<tr>
+                                <td>${c.Name ?? ''}</td>
+                                <td>${c.PhoneNumber ?? ''}</td>
+                                <td>${c.City ?? ''}</td>
+                                <td>${c.State ?? ''}</td>
+                                <td>${c.Address ?? ''}</td>
+                            </tr>`);
+                    });
+                    table.style.display = '';
+                })
+                .catch(() => {
+                    statusEl.textContent = 'Error: could not reach server.';
                 });
-                document.getElementById('contacts-table').style.display = '';
-            })
-            .catch(() => { document.getElementById('contacts-status').textContent = 'Error: could not reach server.'; });
+        }
+
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            loadContacts();
+        });
+
+        clearBtn.addEventListener('click', function() {
+            // Let the native reset run, then reload all contacts
+            setTimeout(loadContacts, 0);
+        });
+
+        // Initial load
+        loadContacts();
     </script>
 
 
